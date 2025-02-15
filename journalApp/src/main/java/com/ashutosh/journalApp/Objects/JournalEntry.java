@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Document(collection = "journal_entry")
+@Document(collection = "journal_entries")
 @Data
 public class JournalEntry {
     @Id
