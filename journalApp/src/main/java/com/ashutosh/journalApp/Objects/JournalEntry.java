@@ -1,6 +1,7 @@
 package com.ashutosh.journalApp.Objects;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Document(collection = "journal_entries")
 @Data
+@NoArgsConstructor
 public class JournalEntry {
     @Id
     private ObjectId id;
@@ -22,6 +24,7 @@ public class JournalEntry {
     private String title;
     private String content;
     private LocalDateTime date;
+
     @DBRef
-    private List<JournalEntry> journalEntries = new ArrayList<>();
+    public User user;
 }
