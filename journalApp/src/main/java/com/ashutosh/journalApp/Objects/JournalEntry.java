@@ -1,30 +1,31 @@
 package com.ashutosh.journalApp.Objects;
 
+import com.ashutosh.journalApp.DTO.UserDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Document(collection = "journal_entries")
 @Data
 @NoArgsConstructor
 public class JournalEntry {
     @Id
-    private ObjectId id;
+    private String id;
     @NonNull
     private String title;
     private String content;
     private LocalDateTime date;
+    public UserDTO userDTO;
 
-    @DBRef
-    public User user;
+    public JournalEntry(@NonNull String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

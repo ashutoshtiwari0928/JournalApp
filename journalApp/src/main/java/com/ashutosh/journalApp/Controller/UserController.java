@@ -20,12 +20,22 @@ public class UserController {
     @Autowired
     private UserService service;
     @GetMapping
-    public List<User> getAllUsers(){
-        return service.getAll();
+    public ResponseEntity<?> getAllUsers(){
+        List<User> list = service.getAll();
+        if(list!=null && !list.isEmpty()){
+            return new ResponseEntity<>(list,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     @PostMapping
-    public void addNewUser(@RequestBody User user){
-        service.saveUser(user);
+    public ResponseEntity<?> addNewUser(@RequestBody User user){
+        try{
+            service.saveUser(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
     @PutMapping("/{userName}")
     public ResponseEntity<?> updateUser(@RequestBody User newUser,@PathVariable String userName){
@@ -45,6 +55,11 @@ public class UserController {
     public User getUserById(@PathVariable ObjectId id){
         Optional<User> user=service.getUserById(id);
         return user.orElse(null);
+    }
+    @DeleteMapping
+    public ResponseEntity<?> clearAll(){
+        service.clearALl();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

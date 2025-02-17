@@ -22,12 +22,11 @@ public class JournalEntryController {
     JournalEntryService journalService;
     @Autowired
     UserService userService;
-
     @GetMapping
     public ResponseEntity<?> viewJournals(){
         List<JournalEntry> list = journalService.getEntry();
         if(list!=null && !list.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(list,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -43,15 +42,15 @@ public class JournalEntryController {
     @PostMapping("/{userName}")
     public ResponseEntity<?> addNewJournal(@RequestBody JournalEntry Entry, @PathVariable String userName){
         try {
-            journalService.saveEntry(Entry,userName);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            if(journalService.saveEntry(Entry,userName))return new ResponseEntity<>("No such user found. ",HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(Entry,HttpStatus.CREATED);
         }
-        catch (Exception e){
+        catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<JournalEntry> updateEntry(@PathVariable ObjectId id, @RequestBody JournalEntry entry){
+    public ResponseEntity<JournalEntry> updateEntry(@PathVariable String id, @RequestBody JournalEntry entry){
         return journalService.updateJournal(id,entry);
     }
 //    @GetMapping("/{id}")
@@ -60,9 +59,14 @@ public class JournalEntryController {
 //        return entry.isPresent()? new ResponseEntity<>(entry.get(),HttpStatus.OK):new ResponseEntity<>(HttpStatus.NOT_FOUND);
 //    }
     @DeleteMapping("/{id}")
-    public ResponseEntity<JournalEntry> deleteById(@PathVariable ObjectId id){
+    public ResponseEntity<JournalEntry> deleteById(@PathVariable String id){
         journalService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    @DeleteMapping
+    public ResponseEntity<?> clearAll(){
+        journalService.clearAll();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.ashutosh.journalApp.Service;
 
+import com.ashutosh.journalApp.DTO.UserDTO;
 import com.ashutosh.journalApp.Objects.JournalEntry;
 import com.ashutosh.journalApp.Objects.User;
 import com.ashutosh.journalApp.Repository.JournalEntryRepo;
@@ -46,5 +47,13 @@ public class UserService {
         User user = repo.findByUsername(name);
         if(user!=null)return user;
         return null;
+    }
+    public UserDTO mapTo(User user){
+        UserDTO k = new UserDTO(user.getUsername());
+        return k;
+    }
+
+    public void clearALl() {
+        repo.deleteAll();
     }
 }
