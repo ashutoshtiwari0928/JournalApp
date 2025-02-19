@@ -4,13 +4,12 @@ import com.ashutosh.journalApp.DTO.UserDTO;
 import com.ashutosh.journalApp.Objects.JournalEntry;
 import com.ashutosh.journalApp.Objects.User;
 import com.ashutosh.journalApp.Repository.JournalEntryRepo;
-import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +22,7 @@ public class JournalEntryService {
     @Autowired
     UserService userService;
 
+    @Transactional
     public boolean saveEntry(@NotNull JournalEntry entry, String userName) {
         try {
             User user = userService.findByUserName(userName);
@@ -48,14 +48,17 @@ public class JournalEntryService {
         return repo.findById(id);
     }
 
-    public void deleteById(String id) {
+    public void deleteById(String id, String userName) {
+        User user = userService.findByUserName(userName);
+        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+        userService.saveUser(user);
         repo.deleteById(id);
     }
 
-    public ResponseEntity<JournalEntry> updateJournal(String id, JournalEntry newEntry) {
+    public ResponseEntity<JournalEntry> updateJournal(String id, JournalEntry newEntry, String userName) {
         JournalEntry old = this.getEntryById(id).orElse(null);
         if (old != null) {
-            if (newEntry.getTitle() != null && (!newEntry.getTitle().equals(""))) {
+            if (!newEntry.getTitle().equals("")) {
                 old.setTitle(newEntry.getTitle());
             }
             if (newEntry.getContent() != null && (!newEntry.getContent().equals(""))) {
